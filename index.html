@@ -783,6 +783,56 @@ body,#app,.app.portrait{background:#e6dfc2;color:var(--ink)}
 .cinematic .alien.enraged:not(.hit):not(.charge):not(.faint):not(.enter) .enemy-art{animation:enraged 1.4s ease-in-out infinite}
 @keyframes enraged{0%,100%{transform:translateY(0)}10%{transform:translate(-2px,-3px) rotate(-1deg)}20%{transform:translate(2px,-2px) rotate(1deg)}30%{transform:translate(-1px,-4px)}40%,90%{transform:translateY(-2px)}}
 @media(prefers-reduced-motion:reduce){.field.whiteflash::after,.field.redflash::after,.hp.jolt,.alien.enraged .enemy-art{animation:none}.floater.hitnum{animation:floatUp 1.1s forwards}}
+
+/* ===== 큰 글씨 · 큰 카드 (눈에 잘 보이게) ===== */
+#app .handzone{height:340px!important;padding-top:10px!important;padding-bottom:8px!important}
+#app .hand .card,#app .card-flight .card{width:196px!important;height:310px!important;flex:0 0 196px!important;padding:9px 10px!important;gap:5px!important}
+#app .card .art{flex:0 0 118px!important;height:118px!important;min-height:118px!important}
+#app .card .card-species{width:118px!important;height:118px!important;min-height:118px!important}
+#app .card .ct{font-size:14px!important;font-weight:700}
+#app .card .cn{font-size:29px!important;line-height:1.1}
+#app .card .ce{font-size:17px!important;line-height:1.3;font-weight:800}
+#app .card .cx{font-size:14.5px!important;line-height:1.4;min-height:0}
+#app .hand .card .why{font-size:16px!important;top:30%}
+#app .hand{padding-bottom:22px!important}
+#app .decklabel{font-size:17px}#app .decklabel small{font-size:13px}#app .draws{font-size:14px}
+#app #btnEnd{font-size:24px;padding:14px 18px;height:auto;width:150px}
+/* 생태계 · 환경 칸 */
+#app:not(.portrait) #pStat,#app:not(.portrait) #pFac{bottom:350px!important;height:100px!important}
+#app .detail-panel .phead{height:22px!important;margin-bottom:6px!important}
+#app .detail-panel h2{font-size:16px!important}
+#app .detail-panel .chip{font-size:13px!important;padding:2px 7px!important}
+#app #pStat .lvlist,#app #pFac .facs{height:52px!important}
+#app #pStat .nm,#app #pFac .factor-name{font-size:16px!important;font-weight:700}
+#app #pStat .now,#app #pFac .val{font-size:30px!important}
+#app #pStat .foot::before{font-size:14px!important}#app #pStat .foot b{font-size:24px!important}
+#app #pStat .foot{top:7px!important}
+#app #pFac .frow{grid-template-columns:auto 30px 1fr!important}
+#app #pFac .factor-name small{font-size:12px!important}
+#app #pFac .eff{font-size:13px!important}#app #pFac .eff small{font-size:13px!important}
+/* 안내 글 · 체력 */
+#app #field .textbox{width:820px!important;height:auto!important;max-height:none!important;font-size:24px!important;line-height:1.35;padding:14px 20px!important}
+#app #field .textbox small{font-size:17px!important;line-height:1.45}
+#app .infobox b{font-size:28px!important}
+#app .infobox .lv{font-size:14px!important}
+#app .infobox .hpn{font-size:21px!important;font-weight:700}
+#app .hprow .hl{font-size:15px!important}
+#app .infobox .hp{height:12px!important}
+#app .top button,#app .top .chip,#app .top .pill{font-size:16px!important}
+#app .floater{font-size:40px!important}
+#app .combat-label{font-size:32px!important}
+.taunt{font-size:22px!important;max-width:none}
+/* 가로 화면: 생물 무대를 칸 위로 올림 */
+#app:not(.portrait) #eco{bottom:450px!important}
+/* 세로 화면 */
+#app.portrait .handzone{height:340px!important}
+#app.portrait #pFac{bottom:350px!important;height:100px!important}
+#app.portrait #pStat{bottom:462px!important;height:100px!important}
+#app.portrait #btnEnd{width:100%;font-size:20px;padding:12px 6px}
+#app.portrait .handzone{grid-template-columns:96px minmax(0,1fr) 110px!important}
+#app.portrait #field .textbox{width:auto!important}
+#app.portrait #pFac .frow{grid-template-columns:auto 26px 1fr!important;padding:3px 5px!important}
+#app.portrait #pFac .eff,#app.portrait #pFac .eff small{font-size:11px!important}
 </style>
 
 </head>
@@ -1470,7 +1520,7 @@ function render(){
 
 function fanHand(){
   const h=$('hand'),cards=[...h.querySelectorAll('.card')],n=cards.length,many=n>10;h.classList.toggle('hand-many',many);if(!n)return;
-  const W=h.clientWidth-30,cw=148,need=n*cw+(n-1)*10,ov=!many&&need>W&&n>1?(need-W)/(n-1)+10:0;
+  const W=h.clientWidth-30,cw=196,need=n*cw+(n-1)*10,ov=!many&&need>W&&n>1?(need-W)/(n-1)+10:0;
   cards.forEach((c,i)=>{c.style.marginLeft=i&&ov?`-${ov}px`:'';c.style.zIndex=i===S.justDrew?4:'';c.style.setProperty('--fan-angle',many?'0deg':`${(i-(n-1)/2)*Math.min(2.6,16/n)}deg`);c.style.setProperty('--fan-rise',many?'0px':`${Math.abs(i-(n-1)/2)*2}px`)});
 }
 // ================= 대화상자 =================
