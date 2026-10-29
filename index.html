@@ -1424,7 +1424,7 @@ function render(){
     }
     st+=`<div class="lvr" data-lv="${k}"><span class="nm">${LV[k].icon} ${LV[k].name}<em>${k?''+fmt(LV[k].atk*attackMultiplier(k)):''}</em></span><span class="now num">${n}</span><span class="dl num ${d>0?'up':d<0?'down':''}">${d>0?'▲':d<0?'▼':''}${nx}</span>${pill}</div>`;
   }
-  $('stat').innerHTML=st; $('dmgPrev').innerHTML=fmt(sim.dmg)+(sim.raw!==sim.dmg?`<small class="rounded" title="소수점 공격력은 내림해요">${fmt(sim.raw)} → ${sim.dmg}</small>`:'');
+  $('stat').innerHTML=st; $('dmgPrev').innerHTML=fmt(sim.dmg);
   const ok=pyramidOK(S.pop);
   const coldCut=sim.dmgRaw-sim.dmg;
   $('shieldNote').innerHTML=coldCut!==0?`<span style="color:${coldCut>0?'#ffc4a9':'#c5eaa5'}">환경 공격 ${coldCut>0?'−':'+'}${Math.abs(coldCut)}</span>`:'';
