@@ -921,6 +921,9 @@ body,#app,.app.portrait{background:#e6dfc2;color:var(--ink)}
 
 /* 체력바 잔상(노란색) 없앰 */
 .hp .ghost{display:none!important}
+
+/* 외계인: 돌판 가운데에 서도록 (가로 화면) */
+#app:not(.portrait) #alien,#app:not(.portrait) #alien[data-stage="1"],#app:not(.portrait) #alien[data-stage="2"]{width:260px!important;left:calc(50% + 365px)!important;right:auto!important}
 </style>
 
 </head>
@@ -1600,7 +1603,7 @@ function render(){
     return `<button class="card card-${c.type} ${i===S.justDrew?'drawn':''}" type="button" data-i="${i}" style="--cc:${col}" ${why!==null&&!discardMode?'disabled':''} title="${c.sci}" aria-label="${c.name}: ${cardEff(card).replace(/<[^>]+>/g,'')}">
       <div class="ct"><span>${c.type==='bio'?'생물':c.type==='utility'?'전략':'환경'}</span><span>${c.type==='bio'?`${S.bioUsed}/2 사용`:'자유 사용'}</span></div>
       <div class="art" aria-hidden="true">${art}</div><div class="cn">${c.name}</div><div class="ce">${cardEff(card)}</div><div class="cx">${cardInfo(card)}</div>
-      ${discardMode?`<div class="why trash">누르면 버려요</div>`:why?`<div class="why">${why}</div>`:''}</button>`;
+      </button>`;
   }).join('') || '<p class="empty">손패 없음 · 턴을 마치면 2장 보급</p>';
   fanHand();
   if(S.busy||S.over||!S.hand.length)discardMode=false;
