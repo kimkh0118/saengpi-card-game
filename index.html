@@ -900,6 +900,24 @@ body,#app,.app.portrait{background:#e6dfc2;color:var(--ink)}
 
 .dlg .bigcancel{font-size:22px!important;padding:12px 30px!important;min-height:56px}
 .dlg .danger-btn{background:#a5583f!important;border-color:#7a3c2a!important;color:#fff6e8!important;font-size:22px!important;padding:12px 30px!important;min-height:56px}
+
+/* ===== 생태계·환경 칸: 이름 위, 숫자 아래 (넘치지 않게) ===== */
+#app:not(.portrait) #pStat .lvr{flex-direction:column!important;justify-content:center!important;align-items:center!important;gap:2px!important;padding:3px 4px!important;overflow:hidden}
+#app:not(.portrait) #pStat .lvr .nm{font-size:15px!important;line-height:1.1}
+#app:not(.portrait) #pStat .lvr .now{font-size:26px!important;line-height:1}
+#app:not(.portrait) #pFac .frow{grid-template-columns:minmax(0,1fr) auto!important;grid-template-rows:auto auto;column-gap:6px!important;row-gap:0!important;padding:3px 8px!important;overflow:hidden}
+#app:not(.portrait) #pFac .frow .factor-name{grid-column:1;grid-row:1/3;font-size:15px!important;align-self:center;min-width:0}
+#app:not(.portrait) #pFac .frow .factor-name small{display:block;font-size:12px!important;white-space:nowrap}
+#app:not(.portrait) #pFac .frow .val{grid-column:2;grid-row:1;font-size:24px!important;line-height:1;text-align:right}
+#app:not(.portrait) #pFac .frow .eff{grid-column:2;grid-row:2;font-size:12px!important;text-align:right;white-space:nowrap}
+#app:not(.portrait) #pFac .frow .eff small{display:inline!important;font-size:12px!important;margin-left:3px}
+
+/* ===== 정사각형에 가까운 창: 위쪽 하늘을 늘려 화면을 꽉 채움 ===== */
+#app:not(.portrait) #field{background:#f2e7ca}
+#app:not(.portrait) .cinema-scene{top:auto!important;bottom:65px!important;height:900px!important}
+#app:not(.portrait) #alien{bottom:495px!important;height:198px!important}
+#app:not(.portrait) #alien[data-stage="1"]{bottom:486px!important}
+#app:not(.portrait) #alien[data-stage="2"]{bottom:468px!important}
 </style>
 
 </head>
@@ -1034,8 +1052,8 @@ function cardInfo(card){
   if(c.type==='bio') return ` 공격 ${LV[c.lv].atk}/마리 (+${LV[c.lv].atk*n})<br>적정: ${LV[c.lv-1].name} ≥ ${LV[c.lv].name}×2`;
   if(c.factor==='light')return '빛 +1당 풀 생장 +2<br>+3 과다: 풀 생장 −2';
   if(c.factor==='water')return '물 +1당 풀 생장 +2<br>물 +3: 홍수 · 풀 −3/턴';
-  if(c.factor==='soil')return '토양 1당 풀 생장 +1<br>적정 0~+3 · 매 턴 1 회복';
-  return c.sign>0?'온도 +1: 풀 생장 +1<br>추위·폭염: 풀 생장 −3':'온도를 낮춰 폭염을 막아요<br>적정 온도 0~+1';
+  if(c.factor==='soil')return '토양 1당 풀 생장 +1<br>적정 0~3 · 매 턴 1 회복';
+  return c.sign>0?'온도 +1: 풀 생장 +1<br>추위·폭염: 풀 생장 −3':'온도를 낮춰 폭염을 막아요<br>적정 온도 0~1';
 }
 // 덱 장수 제한 없음: 뽑을 때마다 아래 비율(가중치)로 무작위 카드가 나와요
 const WEIGHTS = {seed:7, hopper:7, frog:5, snake:3, hawk:2, sun:3, rain:3, soil:2, spring:2, breeze:1, draw2:3, reset:2};
@@ -1224,7 +1242,7 @@ function fit(){
   const app=$('app'), vw=window.innerWidth, vh=window.innerHeight;
   const portrait = vw/vh < 0.9;
   app.classList.toggle('portrait',portrait);
-  const W=portrait?900:Math.max(1215,900*vw/vh), H=portrait?Math.max(1700,900*vh/vw):900;
+  const W=portrait?900:Math.max(1215,900*vw/vh), H=portrait?Math.max(1700,900*vh/vw):Math.max(900,W*vh/vw);
   app.style.width=W+'px';app.style.height=H+'px';
   SCALE=Math.min(vw/W,vh/H);
   app.style.transform=`translate(${Math.max(0,(vw-W*SCALE)/2)}px,${Math.max(0,(vh-H*SCALE)/2)}px) scale(${SCALE})`;
@@ -1554,7 +1572,7 @@ function render(){
     const zone=`left:50%;width:${max/6*100}%`,fill=v>=0?`left:50%;width:${v/6*100}%`:`left:${50+v/6*100}%;width:${-v/6*100}%`;
     const contribution=env[f]||0,status=f==='temp'?(v<0?'추위':v>=2?'폭염':'적정'):(f==='water'&&v>=3?'홍수':f==='water'&&v<=-2?'가뭄':v<0?'부족':v>max?'과다':'적정');
     const effect=`풀 ${contribution>=0?'+':''}${contribution}`;
-    fh+=`<div class="frow"><span class="factor-name">${FAC[f].icon} ${FAC[f].name}<small>적정 0~+${max}</small></span><div class="bar" aria-hidden="true"><span class="zone" style="${zone}"></span><span class="fill ${good?'good':'bad'}" style="${fill}"></span></div><b class="val num">${v>0?'+':''}${v}</b><span class="eff ${good?'good':'bad'}">${status}<small>${effect}</small></span></div>`;
+    fh+=`<div class="frow"><span class="factor-name">${FAC[f].icon} ${FAC[f].name}<small>적정 0~${max}</small></span><div class="bar" aria-hidden="true"><span class="zone" style="${zone}"></span><span class="fill ${good?'good':'bad'}" style="${fill}"></span></div><b class="val num">${v>0?'+':''}${v}</b><span class="eff ${good?'good':'bad'}">${status}<small>${effect}</small></span></div>`;
   }
   $('facs').innerHTML=fh;$('growChip').textContent=`풀 +${sim.growth}/턴`;
 
@@ -1609,7 +1627,7 @@ const HELP=`
     <li><b>턴 종료</b>: ① 풀이 자람 → ② 메뚜기 → 개구리 → 뱀 → 매 순서로 먹이를 섭취 → ③ <b>살아남은</b> 소비자들이 상대를 공격해요. 자동 번식은 없으며, 한 마리당 먹이 1이 필요해요. 부족하면 개체 수가 줄어요.</li>
     <li><b>공격력(한 마리당)</b>: 메뚜기 0.5 · 개구리 2 · 뱀 5 · 매 10</li>
     <li><b>풀 생장(턴마다)</b>: 기본 4 + 빛·물·토양·온도의 기여를 합쳐요. 자세한 값은 환경 줄에 표시됩니다. 풀 수에 비례한 증가는 없어요.</li>
-    <li><b>다음 섭취</b>: 오른쪽 칸은 다음 턴에 먹을 때 먹이가 충분한지 미리 알려 줘요(충분 / 빠듯함 / 부족). 먹이가 포식자의 2배 이상이면 안정적이에요. 빛·물은 0~+2, 토양은 0~+3, 온도는 0~+1이 알맞아요.</li>
+    <li><b>다음 섭취</b>: 오른쪽 칸은 다음 턴에 먹을 때 먹이가 충분한지 미리 알려 줘요(충분 / 빠듯함 / 부족). 먹이가 포식자의 2배 이상이면 안정적이에요. 빛·물은 0~2, 토양은 0~3, 온도는 0~1이 알맞아요.</li>
   </ul>
   <h3>환경별 영향 — 풀에만 적용</h3><ul><li><b>빛</b>: 수치당 풀 생장 +2. +3이면 과다로 −2.</li><li><b>물</b>: 수치당 풀 생장 +2. +3이면 홍수로 −3. 음수는 가뭄으로 생장이 줄어요.</li><li><b>토양</b>: 수치만큼 풀 생장에 가감해요.</li><li><b>온도</b>: 0은 정상, +1은 생장 +1, 음수나 +2 이상은 생장 −3.</li><li>동물 공격력은 환경에 따라 바뀌지 않아요. 환경이 풀을 바꾸고, 풀의 변화는 먹이 섭취를 통해 다른 생물에 영향을 줘요.</li><li>모든 환경은 턴 종료 후 0 쪽으로 1씩 돌아와요.</li></ul><h3>전략 카드</h3><ul><li><b>2장 더 뽑기</b>: 카드 2장을 즉시 추가로 뽑아요.</li><li><b>패 리셋</b>: 남은 패를 모두 버리고 새 카드 5장을 뽑아요. 생물 카드 사용 횟수는 초기화되지 않아요.</li></ul><h3>상대 차례</h3>
   <ul>
