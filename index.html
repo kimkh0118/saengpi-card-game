@@ -885,7 +885,7 @@ body,#app,.app.portrait{background:#e6dfc2;color:var(--ink)}
 #app:not(.portrait) #alien{margin-bottom:65px;height:22%!important}
 
 /* ===== 카드 버리기 ===== */
-.discardbtn{font:700 19px var(--body);padding:12px 8px;border:2px solid #6b7a5a;border-radius:6px;background:#f3ead0;color:#3d5236;cursor:pointer;width:150px;box-shadow:0 3px 0 #6b7a5a55}
+.discardbtn{font:700 18px/1.25 var(--body);padding:10px 8px;border:2px solid #6b7a5a;border-radius:6px;background:#f3ead0;color:#3d5236;cursor:pointer;width:150px;box-shadow:0 3px 0 #6b7a5a55}
 .discardbtn:hover:not(:disabled){background:#e6dcb9}
 .discardbtn.on{background:#a5583f;border-color:#7a3c2a;color:#fff6e8}
 .discardbtn:disabled{opacity:.45;cursor:default}
@@ -897,6 +897,9 @@ body,#app,.app.portrait{background:#e6dfc2;color:var(--ink)}
 #app.portrait .discardbtn{width:100%;font-size:17px;padding:10px 4px}
 /* 안내 상자: 양쪽 HP 상자 사이에만 */
 #app:not(.portrait) #field .textbox{left:426px!important;right:426px!important;width:auto!important;max-width:640px;margin:0 auto}
+
+.dlg .bigcancel{font-size:22px!important;padding:12px 30px!important;min-height:56px}
+.dlg .danger-btn{background:#a5583f!important;border-color:#7a3c2a!important;color:#fff6e8!important;font-size:22px!important;padding:12px 30px!important;min-height:56px}
 </style>
 
 </head>
@@ -964,7 +967,7 @@ body,#app,.app.portrait{background:#e6dfc2;color:var(--ink)}
     </button>
     <div class="hand" id="hand"></div>
     <div class="endcol">
-      <button class="discardbtn" id="btnDiscard" type="button" aria-pressed="false">카드 버리기</button>
+      <button class="discardbtn" id="btnDiscard" type="button" >카드 전체 버리기</button>
       <button class="endbtn" id="btnEnd" type="button">턴 종료</button>
     </div>
   </section>
@@ -1581,8 +1584,6 @@ function render(){
   fanHand();
   if(S.busy||S.over||!S.hand.length)discardMode=false;
   $('btnDiscard').disabled=S.busy||S.over||!S.hand.length;
-  $('btnDiscard').textContent=discardMode?'버리기 끝':'카드 버리기';
-  $('btnDiscard').classList.toggle('on',discardMode);$('btnDiscard').setAttribute('aria-pressed',discardMode);
   $('hand').classList.toggle('discarding',discardMode);
   $('btnEnd').disabled=S.busy||S.over;
   $('btnEnd').classList.toggle('go',S.draws===0);
@@ -1602,7 +1603,7 @@ const HELP=`
   <h3>내 차례</h3>
   <ul>
     <li><b>처음에 5장, 이후 턴마다 2장</b>을 자동으로 뽑아요.</li>
-    <li><b>카드 버리기</b>: 낼 수 없는 카드가 손패를 막으면 「카드 버리기」를 누르고 버릴 카드를 누르세요. 손패는 최대 8장이라 빈자리가 있어야 새 카드를 받아요.</li>
+    <li><b>카드 전체 버리기</b>: 낼 수 없는 카드가 손패를 막으면 「카드 전체 버리기」로 손패를 모두 비울 수 있어요. 한 번 더 물어본 뒤 버려요. 손패는 최대 8장이라 빈자리가 있어야 새 카드를 받아요.</li>
     <li><b>생물 카드는 턴당 최대 2장.</b> 바로 아래 단계가 낼 수만큼 있어야 낼 수 있어요(예: 개구리 +3은 메뚜기 3 이상). 낼 때는 먹지 않고, 턴이 끝날 때 먹어요. 못 먹은 생물은 줄어들어요.</li>
     <li><b>비생물 카드</b>(햇빛·단비·토양·햇살·바람)는 몇 장이든 낼 수 있어요. 바로 풀이 늘지는 않고, 턴 끝에 풀이 자라는 양이 바뀌어요. 환경은 −3 ~ +3이며, 매 턴 종료 후 각 값이 0 쪽으로 1씩 회복돼요.</li>
     <li><b>턴 종료</b>: ① 풀이 자람 → ② 메뚜기 → 개구리 → 뱀 → 매 순서로 먹이를 섭취 → ③ <b>살아남은</b> 소비자들이 상대를 공격해요. 자동 번식은 없으며, 한 마리당 먹이 1이 필요해요. 부족하면 개체 수가 줄어요.</li>
@@ -1634,6 +1635,7 @@ $('dlg').addEventListener('click',e=>{
   if(a==='retry'){newStage(S.stage,MAXHP);intro()}
   if(a==='next'){const n=S.stage+1;story(INTERLUDE[n]).then(()=>beginStage(n))}
   if(a==='forfeit') gameOver(true);
+  if(a==='discardAll') discardAll();
 });
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('ov').hidden&&$('dlg').querySelector('[data-act="close"]'))closeDialog()});
 async function castCard(cardEl){
@@ -1684,10 +1686,18 @@ async function castCard(cardEl){
   }
 }
 $('hand').addEventListener('click',e=>{const c=e.target.closest('.card');if(!c)return;if(discardMode)discardCard(c);else castCard(c)});
-$('btnDiscard').addEventListener('click',()=>{if(S.busy||S.over||cardFlying||!S.hand.length)return;discardMode=!discardMode;
-  if(discardMode)setMsg('버릴 카드를 누르세요.','여러 장 버릴 수 있어요. 다 버렸으면 「버리기 끝」을 누르세요. 손패에 빈자리가 있어야 다음 턴에 새 카드를 받아요.');
-  else setMsg('카드 버리기를 마쳤어요.','생물 카드는 최대 2장, 환경·전략 카드는 몇 장이든 낼 수 있어요.');
-  render()});
+$('btnDiscard').addEventListener('click',()=>{if(S.busy||S.over||cardFlying||!S.hand.length)return;
+  dialog(`<h2>손패를 모두 버릴까요?</h2><p>손에 든 카드 <b>${S.hand.length}장</b>이 모두 사라져요. 되돌릴 수 없어요.</p><p>새 카드는 다음 턴에 ${DRAWS}장을 받아요.</p>
+    <div class="acts"><button class="ghost bigcancel" type="button" data-act="close">취소</button><button class="endbtn danger-btn" type="button" data-act="discardAll">모두 버리기</button></div>`)});
+async function discardAll(){
+  if(S.busy||S.over||cardFlying||!S.hand.length)return;
+  cardFlying=true;const n=S.hand.length;
+  const els=[...document.querySelectorAll('#hand .card')];
+  try{if(!reduced())await Promise.all(els.map((el,k)=>el.animate([{opacity:1},{transform:`translateY(170px) rotate(${(k-(els.length-1)/2)*8}deg) scale(.8)`,opacity:0}],{duration:360,delay:k*45,easing:'ease-in',fill:'forwards'}).finished))}catch(e){}
+  S.hand=[];S.justDrew=-1;cardFlying=false;
+  setMsg(`손패 ${n}장을 모두 버렸어요.`,`다음 턴에 새 카드 ${DRAWS}장을 받아요. 「턴 종료」를 누르세요.`);
+  render();
+}
 async function discardCard(el){
   if(cardFlying)return;const i=+el.dataset.i,card=S.hand[i];if(!card)return;
   cardFlying=true;
