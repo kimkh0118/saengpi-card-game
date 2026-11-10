@@ -3,3 +3,7 @@
 먹이 사슬·생물 피라미드·비생물 요소를 배우는 생태계 카드 배틀 게임 (통합과학 과학 게임 기획 프로젝트).
 
 플레이: https://kimkh0118.github.io/saengpi-card-game/
+
+## 자료
+- [사용설명서 (PDF, 2쪽)](saengpi-guide.pdf) — 규칙·공략·교육적 효과
+- 교육용 썸네일: `thumbnail-edu.png`
